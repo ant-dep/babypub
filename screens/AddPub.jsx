@@ -15,10 +15,9 @@ import {
 import { getCoords, savePub } from "../api/pub";
 import { useSelector } from "react-redux";
 import { selectUser } from "../slices/userSlice";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddPub = (props) => {
-  console.log(props);
-
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
@@ -68,7 +67,7 @@ const AddPub = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         <Text style={styles.title}>Ajouter un bar</Text>
         <TextInput
@@ -101,6 +100,8 @@ const AddPub = (props) => {
           style={styles.input}
           type="text"
           placeholder="zip"
+          keyboardType="numeric"
+          maxLength={5}
           onChangeText={(text) => {
             setZip(text);
           }}
@@ -174,27 +175,29 @@ const AddPub = (props) => {
           <Text style={styles.buttonText}>Enregistrer</Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#42e5ff",
+    backgroundColor: "#eee",
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     textAlign: "center",
-    marginBottom: 20,
-    color: "white",
+    marginBottom: 40,
+    color: "black",
   },
   scrollContainer: {
     width: wp("100%"),
     textAlign: "center",
+    paddingVertical: hp("5%"),
   },
   input: {
     backgroundColor: "white",
+    borderRadius: 10,
     width: wp("60%"),
     height: 40,
     marginBottom: 15,
@@ -205,6 +208,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: wp("60%"),
     height: 120,
+    borderRadius: 10,
     marginBottom: 15,
     marginLeft: wp("20%"),
     paddingLeft: wp("5%"),

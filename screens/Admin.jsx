@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../slices/userSlice";
 import { sendNotif } from "../api/user";
 import * as Notifications from "expo-notifications";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -42,11 +43,11 @@ const Admin = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Admin</Text>
       {user.infos !== null && (
         <TouchableOpacity
-          style={styles.buttonGreen}
+          style={styles.buttonBlue}
           onPress={(e) => {
             let data = {
               token: user.infos.uuid,
@@ -61,7 +62,7 @@ const Admin = (props) => {
               .catch((err) => console.log(err));
           }}
         >
-          <Text>Envoie notif</Text>
+          <Text style={styles.buttonText}>Envoi notif</Text>
         </TouchableOpacity>
       )}
       {pubs.length > 0 ? (
@@ -70,14 +71,14 @@ const Admin = (props) => {
             return (
               <View style={{ flex: 1, flexDirection: "row" }} key={pub.id}>
                 <View style={{ flex: 3, padding: 10 }}>
-                  <Text style={styles.text}>{pub.name}</Text>
+                  <Text style={styles.itemTitle}>{pub.name}</Text>
                   <Text style={styles.text}>
                     {pub.address} {pub.zip} {pub.city}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
                   <TouchableOpacity
-                    style={styles.button}
+                    style={styles.buttonEdit}
                     onPress={() => {
                       goToEdit(pub.id);
                     }}
@@ -85,7 +86,7 @@ const Admin = (props) => {
                     <Text style={styles.buttonText}>modifier</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.buttonRed}
+                    style={styles.buttonDelete}
                     onPress={() => {
                       deleteOnePub(pub.id, user.infos.token).then(() => {
                         getPubByUser(user.infos.token).then((response) => {
@@ -105,20 +106,20 @@ const Admin = (props) => {
       ) : (
         <Text style={styles.text}>Attente des pubs</Text>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#42e5ff",
+    backgroundColor: "#eee",
   },
   title: {
-    color: "white",
+    color: "black",
     fontSize: 26,
     textAlign: "center",
-    marginTop: 50,
+    marginTop: hp("5%"),
   },
   scrollview: {
     width: wp("90%"),
@@ -130,36 +131,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: 25,
+    marginVertical: 20,
   },
-  buttonGreen: {
-    backgroundColor: "green",
-    width: wp("20%"),
+  itemTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "black",
+    marginVertical: 10,
+  },
+  buttonBlue: {
+    backgroundColor: "blue",
+    width: wp("60%"),
+    marginHorizontal: wp("20%"),
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: wp("40%"),
-    marginTop: 10,
+    marginVertical: 30,
   },
   buttonDelete: {
-    backgroundColor: "red",
+    backgroundColor: "darkred",
     padding: 10,
   },
   buttonEdit: {
-    backgroundColor: "#321aed",
+    backgroundColor: "darkblue",
     padding: 10,
-    marginBottom: 5,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: "white",
   },
   text: {
-    color: "white",
-  },
-  name: {
-    color: "white",
-    fontSize: 20,
-  },
-  address: {
-    color: "white",
-    fontSize: 16,
+    color: "black",
+    fontSize: 18,
   },
 });
 

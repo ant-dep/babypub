@@ -6,10 +6,10 @@ import {
 } from "react-native-responsive-screen";
 import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
-import * as Permissions from "expo-permissions";
 import CheckBox from "react-native-check-box";
 import Slider from "@react-native-community/slider";
-import { getAllPubs, getPubWithFilters } from "../api/pub";
+import { getPubsWithFilters } from "../api/pub";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = (props) => {
   const DEFAULT_COORD = {
@@ -20,7 +20,6 @@ const Home = (props) => {
   };
   const [location, setLocation] = useState(DEFAULT_COORD);
   //states ici pour récup les values des options cochées
-  const [isOpen, setIsOpen] = useState(false);
   const [lange, setLange] = useState(false);
   const [poussette, setPoussette] = useState(false);
   const [terrasse, setTerrasse] = useState(false);
@@ -28,15 +27,152 @@ const Home = (props) => {
   const [distance, setDistance] = useState(1);
   const [pubs, setPubs] = useState([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getGeolocAsync();
+  }, []);
 
-  const getGeolocAsync = async () => {};
+  const getGeolocAsync = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMessage("Permission to access location was denied");
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+  };
 
-  const onSearchPub = () => {};
+  const onSearchPub = () => {
+    let data = {
+      lange: lange,
+      poussette: poussette,
+      terrasse: terrasse,
+      jeux: jeux,
+      distance: distance,
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    };
+    getPubsWithFilters(data)
+      .then((res) => {
+        console.log(res.data);
+        setPubs(res.data.pubs);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Page</Text>
+      {location && (
+        <MapView
+          style={{ flex: 2 }}
+          region={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+          }}
+          showsUserLocation={true}
+          scrollEnabled={true}
+          liteMode={false}
+        >
+          {pubs.map((pub) => {
+            return (
+              <Marker
+                key={pub.id}
+                title={pub.name}
+                coordinate={{
+                  latitude: parseFloat(pub.lat),
+                  longitude: parseFloat(pub.lng),
+                }}
+                onPress={() => {
+                  onSearchPub();
+                }}
+              >
+                <Callout>
+                  <Text>{pub.name}</Text>
+                  <Text>
+                    {pub.address} {pub.zip} {pub.city}
+                  </Text>
+                  <TouchableOpacity>{pub.description}</TouchableOpacity>
+                </Callout>
+              </Marker>
+            );
+          })}
+        </MapView>
+      )}
+
+      <View style={styles.commande}>
+        <View style={styles.checkBoxContainer}>
+          <CheckBox
+            style={styles.checkBox}
+            onClick={() => {
+              setLange(!lange);
+            }}
+            isChecked={lange}
+            rightText={"Lange"}
+            checkBoxColor="black"
+            rightTextStyle={{ color: "black" }}
+          />
+          <CheckBox
+            style={styles.checkBox}
+            onClick={() => {
+              setPoussette(!poussette);
+            }}
+            isChecked={poussette}
+            rightText={"Poussette"}
+            checkBoxColor="black"
+            rightTextStyle={{ color: "black" }}
+          />
+        </View>
+        <View style={styles.checkBoxContainer}>
+          <CheckBox
+            style={styles.checkBox}
+            onClick={() => {
+              setTerrasse(!terrasse);
+            }}
+            isChecked={terrasse}
+            rightText={"Terrasse"}
+            checkBoxColor="black"
+            rightTextStyle={{ color: "black" }}
+          />
+          <CheckBox
+            style={styles.checkBox}
+            onClick={() => {
+              setJeux(!jeux);
+            }}
+            isChecked={jeux}
+            rightText={"Jeux"}
+            checkBoxColor="black"
+            rightTextStyle={{ color: "black" }}
+          />
+        </View>
+        <View style={styles.validateContainer}>
+          <Slider
+            style={{ width: wp("80%"), height: 40, marginLeft: wp("10%") }}
+            minimumValue={1}
+            maximumValue={10}
+            step={1}
+            minimumTrackTintColor="#321aed"
+            maximumTrackTintColor="#321aed"
+            thumbTintColor="#321aed"
+            value={distance}
+            onValueChange={(value) => {
+              setDistance(value);
+            }}
+          />
+          <Text style={styles.distance}>
+            Distance de recherche : {distance} km
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              onSearchPub();
+            }}
+          >
+            <Text style={styles.text}>Rechercher</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -44,15 +180,9 @@ const Home = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#42e5ff",
+    backgroundColor: "#eee",
   },
   /*votre css perso*/
-  title: {
-    fontSize: 20,
-    textAlign: "center",
-    marginBottom: 20,
-    color: "white",
-  },
   text: {
     color: "white",
     textAlign: "center",
@@ -69,6 +199,11 @@ const styles = StyleSheet.create({
     marginLeft: wp("20%"),
     paddingLeft: wp("5%"),
   },
+  distance: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 15,
+  },
   button: {
     backgroundColor: "#321aed",
     width: wp("40%"),
@@ -82,7 +217,11 @@ const styles = StyleSheet.create({
     color: "white",
   },
   commande: {
-    flex: 1,
+    position: "absolute",
+    bottom: 0,
+    width: wp("100%"),
+    height: hp("30%"),
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
   checkBoxContainer: {
     flex: 1,
@@ -99,9 +238,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-  };
-};
 export default Home;

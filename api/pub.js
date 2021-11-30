@@ -47,7 +47,7 @@ export const getPubByUser = (user_id) => {
 
 export const getOnePub = (id) => {
   return axios
-    .get(`${config.api_url}/api/v1/pubs/${id}`)
+    .get(`${config.api_url}/api/v1/pub/${id}`)
     .then((response) => {
       console.log(response);
       return response;
@@ -84,9 +84,9 @@ export const deleteOnePub = (id) => {
     });
 };
 
-export const getPubWithFilters = (data) => {
+export const getPubsWithFilters = (data) => {
   return axios
-    .post(`${config.api_url}/api/v1/pubs/filters`, data)
+    .get(`${config.api_url}/api/v1/pubs/filters`, data)
     .then((response) => {
       console.log(response);
       return response;
