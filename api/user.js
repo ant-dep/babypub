@@ -69,3 +69,16 @@ export const getOneUser = (id) => {
       return error;
     });
 };
+
+export const sendNotif = (data, token) => {
+  return axios
+    .post(config.api_url + "/api/v1/notif", data, {
+      headers: { "x-access-token": token },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((err) => {
+      return err;
+    });
+};

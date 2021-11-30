@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { saveUser } from "../api/user";
+import tw from "tailwind-react-native-classnames";
 
 const Register = (props) => {
   const [firstName, setFirstName] = useState("");
@@ -16,7 +26,7 @@ const Register = (props) => {
 
   const [error, setError] = useState(false);
 
-  const register = async () => {
+  const registerFunc = async () => {
     setError(false);
     let datas = {
       firstName: firstName,
@@ -45,87 +55,102 @@ const Register = (props) => {
   };
 
   return (
-    <View>
-      <h1>Register</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault(), register();
-        }}
+    <SafeAreaView style={tw`flex-1 items-center bg-white`}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <Text style={tw`text-3xl text-center font-bold my-5`}>Register</Text>
+        <View style={tw`pt-10 h-4/5 items-center justify-between`}>
+          {error.error && <Text>{error.message}</Text>}
+          <View>
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setFirstName(value);
+              }}
+              type="text"
+              placeholder="first name"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setLastName(value);
+              }}
+              type="text"
+              placeholder="last name"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setEmail(value);
+              }}
+              type="email"
+              keyboardType="email-address"
+              placeholder="email"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setAddress(value);
+              }}
+              type="text"
+              placeholder="address"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setZip(value);
+              }}
+              type="text"
+              keyboardType="numeric"
+              maxLength={5}
+              placeholder="zip code"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setCity(value);
+              }}
+              type="text"
+              placeholder="city"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setPhone(value);
+              }}
+              type="text"
+              keyboardType="phone-pad"
+              maxLength={11}
+              placeholder="phone"
+            />
+          </View>
+          <View style={tw`mt-4`}>
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setPassword(value);
+              }}
+              secureTextEntry={true}
+              placeholder="Password"
+            />
+            <TextInput
+              style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
+              onChangeText={(value) => {
+                setConfirmPassword(value);
+              }}
+              secureTextEntry={true}
+              placeholder="Confirm Password"
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+      <TouchableOpacity
+        onPress={registerFunc}
+        style={tw`w-60 p-2 items-center bg-blue-400 rounded shadow-md`}
       >
-        {error.error && <p>{error.message}</p>}
-        <View>
-          <TextInput
-            onChangeText={(value) => {
-              setFirstName(value);
-            }}
-            type="text"
-            placeholder="first name"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setLastName(value);
-            }}
-            type="text"
-            placeholder="last name"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setEmail(value);
-            }}
-            type="email"
-            placeholder="email"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setAddress(value);
-            }}
-            type="text"
-            placeholder="address"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setZip(value);
-            }}
-            type="text"
-            placeholder="zip code"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setCity(value);
-            }}
-            type="text"
-            placeholder="city"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setPhone(value);
-            }}
-            type="text"
-            placeholder="phone"
-          />
-        </View>
-        <View>
-          <TextInput
-            onChangeText={(value) => {
-              setPassword(value);
-            }}
-            secureTextEntry={true}
-            placeholder="Password"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setConfirmPassword(value);
-            }}
-            secureTextEntry={true}
-            placeholder="Confirm Password"
-          />
-        </View>
-        <button type="submit">Register</button>
-      </form>
-    </View>
+        <Text style={tw`text-white text-lg font-bold`}>Register</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 
 export default Register;
-
-const styles = StyleSheet.create({});

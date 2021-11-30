@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { registerForPushNotificationsAsync } from "../helpers/notifications";
 import { loginUser } from "../api/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { connectUser } from "../redux/actions/user/userAction";
-// import { connect } from "react-redux";
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/userSlice";
+import { setUser } from "../slices/userSlice";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import tw from "tailwind-react-native-classnames";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -15,19 +24,21 @@ const Login = (props) => {
 
   const dispatch = useDispatch();
 
-  const login = async () => {
+  const loginFunc = async () => {
     setError(false);
+    let lowerEmail = email.toLowerCase();
     let datas = {
-      email: email,
+      email: lowerEmail,
       password: password,
     };
     if (email !== "" && password !== "") {
       let res = await loginUser(datas);
       if (res.status === 200) {
         let storage = await AsyncStorage.setItem("token", res.data.token);
+
+        registerForPushNotificationsAsync(res.data.user.id);
         let user = res.data.user;
         user.token = res.data.token;
-        // props.connectUser(user);
         dispatch(setUser(user));
       } else {
         setError({ error: true, message: "can't log user" });
@@ -41,46 +52,43 @@ const Login = (props) => {
   };
 
   return (
-    <View>
-      <h1>Login</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault(), login();
-        }}
-      >
-        {error.error && <p>{error.message}</p>}
-        <View>
-          <TextInput
-            onChangeText={(value) => {
-              setEmail(value);
-            }}
-            type="email"
-            placeholder="email"
-          />
-          <TextInput
-            onChangeText={(value) => {
-              setPassword(value);
-            }}
-            secureTextEntry={true}
-            placeholder="Password"
-          />
+    <SafeAreaView style={tw`flex-1 items-center bg-white`}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Text style={tw`text-3xl text-center font-bold my-5`}>Login</Text>
+        <View style={tw`pt-10 h-4/6 items-center justify-between`}>
+          {error.error && <Text>{error.message}</Text>}
+          <View style={tw`pt-10 h-5/6 self-center`}>
+            <TextInput
+              style={tw`w-60 h-12 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow`}
+              onChangeText={(value) => {
+                setEmail(value);
+              }}
+              type="email"
+              placeholder="email"
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={tw`w-60 h-12 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow`}
+              onChangeText={(value) => {
+                setPassword(value);
+              }}
+              secureTextEntry={true}
+              type="password"
+              placeholder="Password"
+            />
+          </View>
         </View>
-        <button type="submit">Register</button>
-      </form>
-    </View>
+      </TouchableWithoutFeedback>
+      <TouchableOpacity
+        onPress={() => {
+          loginFunc();
+        }}
+        style={tw`w-60 mt-5 p-2 items-center bg-blue-400 rounded shadow-md`}
+      >
+        <Text style={tw`text-white text-lg font-bold `}>Login</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 
-// const mapStateToProps = (store) => {
-//   return {
-//     user: store.user,
-//   };
-// };
-
-// const mapDispatchToProps = {
-//   connectUser,
-// };
-
 export default Login;
-
-const styles = StyleSheet.create({});

@@ -13,10 +13,15 @@ export const userSlice = createSlice({
       state.infos = action.payload; // update the state with the action commin in named "payload"
       state.isLogged = true;
     },
+    setLogout: (state) => {
+      state.infos = {};
+      state.isLogged = false;
+    },
   },
 });
 
 export const { setUser } = userSlice.actions;
+export const { setLogout } = userSlice.actions;
 
 // selectors
 export const selectUser = (state) => state.user;
