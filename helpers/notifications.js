@@ -35,12 +35,9 @@ export const registerForPushNotificationsAsync = async (id) => {
       id: id,
     };
     //on enregistre le token de pushnotif
-    console.log("l uuid data", data);
     axios
       .put(config.api_url + "/api/v1/user/updateUuid", data)
-      .then((res) => {
-        console.log("l uuid token 2", res);
-      })
+      .then((res) => {})
       .catch((err) => {
         console.log("err", err);
       });

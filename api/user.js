@@ -7,7 +7,6 @@ export const getData = async () => {
     const value = await AsyncStorage.getItem("token");
     if (value !== null) {
       // value previously stored
-      console.log(value);
       return value;
     }
   } catch (e) {
@@ -48,7 +47,6 @@ export const checkToken = async (token) => {
       headers: { "x-access-token": token },
     })
     .then((response) => {
-      console.log(response);
       return response;
     })
     .catch((error) => {

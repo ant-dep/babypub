@@ -8,8 +8,7 @@ import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import CheckBox from "react-native-check-box";
 import Slider from "@react-native-community/slider";
-import { getPubsWithFilters } from "../api/pub";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { getPubs, getPubsWithFilters } from "../api/pub";
 
 const Home = (props) => {
   const DEFAULT_COORD = {
@@ -27,9 +26,20 @@ const Home = (props) => {
   const [distance, setDistance] = useState(1);
   const [pubs, setPubs] = useState([]);
 
-  useEffect(() => {
-    getGeolocAsync();
+  useEffect(async () => {
+    await getGeolocAsync();
+    await getPubs()
+      .then((pubs) => {
+        setPubs(pubs.pubs);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
+
+  useEffect(() => {
+    console.log("useEffect", pubs);
+  }, [pubs]);
 
   const getGeolocAsync = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -41,22 +51,23 @@ const Home = (props) => {
   };
 
   const onSearchPub = () => {
+    console.log("onSearchPub");
     let data = {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
       lange: lange,
       poussette: poussette,
       terrasse: terrasse,
       jeux: jeux,
       distance: distance,
-      lat: location.coords.latitude,
-      lng: location.coords.longitude,
     };
     getPubsWithFilters(data)
       .then((res) => {
-        console.log(res.data);
+        console.log("COUCOU CA MARCHE", res.data);
         setPubs(res.data.pubs);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("COUCOU ERREUR", err);
       });
   };
 
@@ -75,29 +86,35 @@ const Home = (props) => {
           scrollEnabled={true}
           liteMode={false}
         >
-          {pubs.map((pub) => {
-            return (
-              <Marker
-                key={pub.id}
-                title={pub.name}
-                coordinate={{
-                  latitude: parseFloat(pub.lat),
-                  longitude: parseFloat(pub.lng),
-                }}
-                onPress={() => {
-                  onSearchPub();
-                }}
-              >
-                <Callout>
-                  <Text>{pub.name}</Text>
-                  <Text>
-                    {pub.address} {pub.zip} {pub.city}
-                  </Text>
-                  <TouchableOpacity>{pub.description}</TouchableOpacity>
-                </Callout>
-              </Marker>
-            );
-          })}
+          {pubs.length > 0 && (
+            <>
+              {pubs.map((pub) => {
+                return (
+                  <MapView.Marker
+                    title={pub.name}
+                    coordinate={{
+                      latitude: parseFloat(pub.lat),
+                      longitude: parseFloat(pub.lng),
+                    }}
+                    key={pub.id}
+                    onPress={() => {
+                      onSearchPub();
+                    }}
+                  >
+                    <Callout>
+                      <Text>{pub.name}</Text>
+                      <Text>
+                        {pub.address} {pub.zip} {pub.city}
+                      </Text>
+                      <TouchableOpacity>
+                        <Text>{pub.description}</Text>
+                      </TouchableOpacity>
+                    </Callout>
+                  </MapView.Marker>
+                );
+              })}
+            </>
+          )}
         </MapView>
       )}
 

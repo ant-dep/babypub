@@ -20,7 +20,6 @@ const RequireAuthData = () => {
             .then((response) => {
               //si le status de la reponse est 200
               if (response.data.status === 200) {
-                console.log(response.data);
                 //appel de l'action de connexion de l'user à redux
                 dispatch(setUser(response.data.user));
               } else {
