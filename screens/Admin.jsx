@@ -30,13 +30,14 @@ const Admin = (props) => {
   const user = useSelector(selectUser);
 
   useEffect(() => {
+    console.log("test", user)
     getPubByUser(user.infos.id)
       .then((response) => {
         console.log("mes pubs", response);
-        setPubs(response.data.pubs);
+        setPubs(response.pubs);
       })
       .catch((err) => console.log(err));
-  }, [props]);
+  }, []);
 
   const goToEdit = (id) => {
     props.navigation.navigate("EditPub", { id: id });
@@ -48,18 +49,17 @@ const Admin = (props) => {
       {user.infos !== null && (
         <TouchableOpacity
           style={styles.buttonBlue}
-          onPress={(e) => {
-            let data = {
+          onPress={()=>{
+              let data = {
               token: user.infos.uuid,
-              msg: "Oh j'envoie une notif",
-            };
-            console.log("NOTIF", data);
+              msg: "Oh j'envoie une fucking notif"
+              }
+              sendNotif(data, user.infos.token)
+                  .then((token)=>{
+                      console.log(token);
+                  })
 
-            sendNotif(data, user.infos.token)
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((err) => console.log(err));
+              
           }}
         >
           <Text style={styles.buttonText}>Envoi notif</Text>

@@ -34,11 +34,12 @@ const Login = (props) => {
     if (email !== "" && password !== "") {
       let res = await loginUser(datas);
       if (res.status === 200) {
-        let storage = await AsyncStorage.setItem("token", res.data.token);
+        console.log(res)
+        let storage = await AsyncStorage.setItem("token", res.token);
 
-        registerForPushNotificationsAsync(res.data.user.id);
-        let user = res.data.user;
-        user.token = res.data.token;
+        registerForPushNotificationsAsync(res.user.id);
+        let user = res.user;
+        user.token = res.token;
         dispatch(setUser(user));
       } else {
         setError({ error: true, message: "can't log user" });

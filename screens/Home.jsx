@@ -8,7 +8,7 @@ import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import CheckBox from "react-native-check-box";
 import Slider from "@react-native-community/slider";
-import { getPubs, getPubsWithFilters } from "../api/pub";
+import { getPubs, getPubWithFilters } from "../api/pub";
 
 const Home = (props) => {
   const DEFAULT_COORD = {
@@ -28,13 +28,13 @@ const Home = (props) => {
 
   useEffect(async () => {
     await getGeolocAsync();
-    await getPubs()
+    /*await getPubs()
       .then((pubs) => {
         setPubs(pubs.pubs);
       })
       .catch((error) => {
         console.log(error);
-      });
+      });*/
   }, []);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const Home = (props) => {
   };
 
   const onSearchPub = () => {
-    console.log("onSearchPub");
+    
     let data = {
       lat: location.coords.latitude,
       lng: location.coords.longitude,
@@ -61,10 +61,11 @@ const Home = (props) => {
       jeux: jeux,
       distance: distance,
     };
-    getPubsWithFilters(data)
+    console.log("onSearchPub", data);
+    getPubWithFilters(data)
       .then((res) => {
-        console.log("COUCOU CA MARCHE", res.data);
-        setPubs(res.data.pubs);
+        console.log("COUCOU CA MARCHE", res);
+        setPubs(res.pubs);
       })
       .catch((err) => {
         console.log("COUCOU ERREUR", err);

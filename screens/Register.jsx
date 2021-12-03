@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { saveUser } from "../api/user";
@@ -58,9 +59,9 @@ const Register = (props) => {
     <SafeAreaView style={tw`flex-1 items-center bg-white`}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <Text style={tw`text-3xl text-center font-bold my-5`}>Register</Text>
-        <View style={tw`pt-10 h-4/5 items-center justify-between`}>
+        <ScrollView style={tw`pb-10`}>
           {error.error && <Text>{error.message}</Text>}
-          <View>
+          <View style={tw`pt-10 h-4/5 items-center justify-between`}>
             <TextInput
               style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
               onChangeText={(value) => {
@@ -123,7 +124,7 @@ const Register = (props) => {
               placeholder="phone"
             />
           </View>
-          <View style={tw`mt-4`}>
+          <View style={tw`pt-10 items-center justify-between`}>
             <TextInput
               style={tw`w-60 my-2 pl-3 pb-2 border border-gray-200 rounded-sm text-lg shadow `}
               onChangeText={(value) => {
@@ -140,15 +141,21 @@ const Register = (props) => {
               secureTextEntry={true}
               placeholder="Confirm Password"
             />
+            
           </View>
+        </ScrollView>
+        <View>
+          <TouchableOpacity
+              onPress={registerFunc}
+              style={tw`w-60 m-5 p-2 items-center bg-blue-400 rounded shadow-md`}
+            >
+              <Text style={tw`text-white text-lg font-bold`}>Register</Text>
+            </TouchableOpacity>
         </View>
+
+        
       </TouchableWithoutFeedback>
-      <TouchableOpacity
-        onPress={registerFunc}
-        style={tw`w-60 p-2 items-center bg-blue-400 rounded shadow-md`}
-      >
-        <Text style={tw`text-white text-lg font-bold`}>Register</Text>
-      </TouchableOpacity>
+      
     </SafeAreaView>
   );
 };
